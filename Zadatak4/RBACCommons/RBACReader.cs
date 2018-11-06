@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace RBACCommons
 {
-    public interface IRBACManager
+    interface RBACReader
     {
-        void AddGroup(string group);
-        void RemoveGroup(string group);
-        void AddPermission(string group, string perm);
-        void RemovePermission(string group, string perm);
         bool IsGroupAllowed(string group, string perm);
         List<string> GetPermsForGroup(string group);
         Dictionary<string, List<string>> GetAll();

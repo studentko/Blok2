@@ -1,0 +1,16 @@
+<Groups>
+  <Group>
+    <Name>wcfAdmin</Name>
+    <Permissions>
+      <Perm>Read</Perm>
+      <Perm>Modify</Perm>
+      <Perm>Delete</Perm>
+    </Permissions>
+  </Group>
+  <Group>
+    <Name>wcfReader</Name>
+    <Permissions>
+      <Perm>Read</Perm>
+    </Permissions>
+  </Group>
+</Groups>

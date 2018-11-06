@@ -42,6 +42,16 @@
   <ItemGroup>
     <Compile Include="IRBACManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Exceptions\RBACAlreadyExistsException.cs" />
+    <Compile Include="Exceptions\RBACException.cs" />
+    <Compile Include="RBACManager.cs" />
+    <Compile Include="Exceptions\RBACNotFoundException.cs" />
+    <Compile Include="RBACReader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="RBAC.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
