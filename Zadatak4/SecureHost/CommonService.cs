@@ -17,11 +17,13 @@ namespace SecureHost
     {
         Dictionary<string, object> locks;
         object lObject;
+        SIEM log;
 
         public CommonService()
         {
             locks = new Dictionary<string, object>();
             lObject = new object();
+            log = new SIEM("Projekat 4");
         }
 
         private string GetOwner(string fileName)
@@ -44,15 +46,15 @@ namespace SecureHost
 
         private void SetOwner(string fileName, string owner)
         {
+            XmlDocument ownership = new XmlDocument();
             if (!File.Exists("ownership.xml"))
             {
-                File.Create("ownership.xml").Close();
-            }
-            XmlDocument ownership = new XmlDocument();
-            ownership.Load("ownership.xml");
-            if (!ownership.HasChildNodes)
-            {
                 ownership.AppendChild(ownership.CreateElement("Files"));
+                ownership.Save("ownership.xml");
+            }
+            else
+            {
+                ownership.Load("ownership.xml");
             }
             if (ownership.FirstChild[fileName] == null)
             {
@@ -93,7 +95,10 @@ namespace SecureHost
                 //END
                 if (!File.Exists(fileName)) throw new FaultException<CommonServiceException>(new CommonServiceException("File doesnt exist"));
                 if (GetOwner(fileName) != Thread.CurrentPrincipal.Identity.Name && !Thread.CurrentPrincipal.IsInRole("Administrate"))
+                {
+                    log.LogError(String.Format("User {0} lacked Administrate permission or file ownership", Thread.CurrentPrincipal.Identity.Name));
                     throw new FaultException<CommonServiceException>(new CommonServiceException("File doesnt exist"));
+                }
                 File.Delete(fileName);
                 locks.Remove(fileName);
             }
