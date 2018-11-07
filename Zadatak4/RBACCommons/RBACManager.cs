@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,9 @@ namespace RBACCommons
     {
         static RBACManager instance = null;
 
-        DateTime lastReload;
+        List<IRBACObserver> observers;
+
+        DateTime lastEdit;
 
         Dictionary<string, List<string>> permissions = null;
         XmlDocument xml = null;
@@ -32,18 +35,22 @@ namespace RBACCommons
                 }
             }
             writer.Save("RBAC.xml");
+            lastEdit = File.GetLastWriteTime("RBAC.xml");
+            NotifyAll();
         }
 
         private void ReloadCheck()
         {
             lock (lObject)
             {
-                if (DateTime.Now - lastReload > TimeSpan.FromSeconds(1)) ReloadRBAC();
+                DateTime edit = File.GetLastWriteTime("RBAC.xml");
+                if (lastEdit != edit) ReloadRBAC();
             }
         }
 
         private void ReloadRBAC()
         {
+
             permissions = new Dictionary<string, List<string>>();
 
             xml = new XmlDocument();
@@ -59,11 +66,13 @@ namespace RBACCommons
                 }
                 permissions.Add(name, perms);
             }
-            lastReload = DateTime.Now;
+            lastEdit = File.GetLastWriteTime("RBAC.xml");
+            NotifyAll();
         }
 
         private RBACManager()
         {
+            observers = new List<IRBACObserver>();
             ReloadRBAC();
         }
 
@@ -85,7 +94,7 @@ namespace RBACCommons
 
         public void AddGroup(string group)
         {
-            ReloadRBAC();
+            ReloadCheck();
             if (permissions.ContainsKey(group))
                 throw new RBACAlreadyExistsException("Group already exists");
             permissions.Add(group, new List<string>());
@@ -94,7 +103,7 @@ namespace RBACCommons
 
         public void AddPermission(string group, string perm)
         {
-            ReloadRBAC();
+            ReloadCheck();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group not found");
             if (permissions[group].Contains(perm))
@@ -129,7 +138,7 @@ namespace RBACCommons
 
         public void RemoveGroup(string group)
         {
-            ReloadRBAC();
+            ReloadCheck();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group doesnt exist");
             permissions.Remove(group);
@@ -138,13 +147,26 @@ namespace RBACCommons
 
         public void RemovePermission(string group, string perm)
         {
-            ReloadRBAC();
+            ReloadCheck();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group doesnt exist");
             if (!permissions[group].Contains(perm))
                 throw new RBACNotFoundException("Permission doesnt exist");
             permissions[group].Remove(perm);
             WriteToXml();
+        }
+
+        public void AddObserver(IRBACObserver observer)
+        {
+            observers.Add(observer);
+        }
+
+        private void NotifyAll()
+        {
+            foreach (var observer in observers)
+            {
+                observer.NotifyUpdate();
+            }
         }
     }
 }

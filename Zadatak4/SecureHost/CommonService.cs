@@ -49,6 +49,7 @@ namespace SecureHost
                 File.Create("ownership.xml").Close();
             }
             XmlDocument ownership = new XmlDocument();
+            ownership.Load("ownership.xml");
             if (!ownership.HasChildNodes)
             {
                 ownership.AppendChild(ownership.CreateElement("Files"));
