@@ -13,17 +13,7 @@ namespace SecureProxy
     {
         static void Main(string[] args)
         {
-            NetTcpBinding binding = new NetTcpBinding();
-
-            binding.Security.Mode = SecurityMode.Transport;
-            binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            //binding.Security.Transport.ProtectionLevel = ProtectionLevel.EncryptAndSign;
-
-            string address = "net.tcp://localhost:12354/ICommonService";
-
-            ChannelFactory<ICommonService> factory = new ChannelFactory<ICommonService>(binding, address);
-
-            ICommonService proxy = factory.CreateChannel();
+            ICommonService proxy = (new WinAuthClient("net.tcp://localhost:12354/ICommonService")).Proxy;
 
             try
             {
@@ -32,7 +22,7 @@ namespace SecureProxy
             {
                 Console.WriteLine(e.Message + "\n" + e.StackTrace);
             }
-
+            Console.ReadLine();
             try
             {
                 proxy.Delete("hopala");
@@ -42,6 +32,7 @@ namespace SecureProxy
                 Console.WriteLine(e.Message + "\n" + e.StackTrace);
             }
 
+            Console.ReadLine();
             try
             {
                 proxy.Modify("hopala", "jojo", EModifyType.Overwrite);
@@ -51,6 +42,7 @@ namespace SecureProxy
                 Console.WriteLine(e.Message + "\n" + e.StackTrace);
             }
 
+            Console.ReadLine();
             try
             {
                 proxy.Read("hopala");

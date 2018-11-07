@@ -85,7 +85,7 @@ namespace RBACCommons
 
         public void AddGroup(string group)
         {
-            ReloadCheck();
+            ReloadRBAC();
             if (permissions.ContainsKey(group))
                 throw new RBACAlreadyExistsException("Group already exists");
             permissions.Add(group, new List<string>());
@@ -94,7 +94,7 @@ namespace RBACCommons
 
         public void AddPermission(string group, string perm)
         {
-            ReloadCheck();
+            ReloadRBAC();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group not found");
             if (permissions[group].Contains(perm))
@@ -129,7 +129,7 @@ namespace RBACCommons
 
         public void RemoveGroup(string group)
         {
-            ReloadCheck();
+            ReloadRBAC();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group doesnt exist");
             permissions.Remove(group);
@@ -138,7 +138,7 @@ namespace RBACCommons
 
         public void RemovePermission(string group, string perm)
         {
-            ReloadCheck();
+            ReloadRBAC();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group doesnt exist");
             if (!permissions[group].Contains(perm))
