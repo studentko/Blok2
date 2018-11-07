@@ -10,7 +10,20 @@ namespace SecureHost
     {
         static void Main(string[] args)
         {
-            CommonService cs = new CommonService();
+            SecureHostConfig hostConfig = new SecureHostConfig()
+            {
+                AuthenticationType = WCFCommons.EAuthType.Windows,
+                Ip = "0.0.0.0",
+                Port = 12354
+            };
+
+            SecureHost host = new SecureHost(hostConfig);
+            Console.WriteLine("Opening secure host...");
+            host.Open();
+            Console.WriteLine("Host opened. Press key to close");
+            Console.Read();
+
+            //CommonService cs = new CommonService();
             //cs.Modify("TestFile.txt", "Failed Test", WCFCommons.EModifyType.Overwrite);
             /*cs.Create("TestFile.txt");
             cs.Modify("TestFile.txt", "Test 1", WCFCommons.EModifyType.Append);

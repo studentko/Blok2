@@ -10,4 +10,9 @@ namespace WCFCommons
     {
         Overwrite, Append
     }
+
+    public enum EAuthType
+    {
+        Windows, Cert
+    }
 }
