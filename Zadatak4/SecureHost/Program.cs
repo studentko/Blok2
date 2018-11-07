@@ -12,7 +12,7 @@ namespace SecureHost
         {
             SecureHostConfig hostConfig = new SecureHostConfig()
             {
-                AuthenticationType = WCFCommons.EAuthType.Windows,
+                AuthenticationType = WCFCommons.EAuthType.Cert,
                 Ip = "0.0.0.0",
                 Port = 12354
             };

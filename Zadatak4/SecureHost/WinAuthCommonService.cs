@@ -24,10 +24,10 @@ namespace SecureHost
             WindowsIdentity winId = Thread.CurrentPrincipal.Identity as WindowsIdentity;
 
             Console.Write("Groups: ");
-            foreach (var gr in winId.Groups)
+            /*foreach (var gr in winId.Groups)
             {
                 Console.Write("{0}, ", gr.Value);
-            }
+            }*/
             Console.WriteLine();
 
             implementedService.Create(fileName);
