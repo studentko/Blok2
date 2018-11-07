@@ -1,18 +1,29 @@
 <Groups>
   <Group>
-    <Name>wcfAdmin</Name>
+    <Name>DESKTOP-9M01B3A\wcfAdmin</Name>
     <Permissions>
       <Perm>Read</Perm>
-      <Perm>Modify</Perm>
+      <Perm>Write</Perm>
       <Perm>Delete</Perm>
+      <Perm>Access</Perm>
+      <Perm>Administrate</Perm>
+    </Permissions>
+  </Group>
+  <Group>
+    <Name>DESKTOP-9M01B3A\wcfReader</Name>
+    <Permissions>
+      <Perm>Read</Perm>
       <Perm>Access</Perm>
     </Permissions>
   </Group>
   <Group>
-    <Name>wcfReader</Name>
+    <Name>SEDMAK-PC\wcfAdmin</Name>
     <Permissions>
       <Perm>Read</Perm>
+      <Perm>Write</Perm>
+      <Perm>Delete</Perm>
       <Perm>Access</Perm>
+      <Perm>Administrate</Perm>
     </Permissions>
   </Group>
 </Groups>

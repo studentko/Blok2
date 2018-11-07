@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,8 +12,13 @@ namespace RBACCommons
     {
         static RBACManager instance = null;
 
+        List<IRBACObserver> observers;
+
+        DateTime lastEdit;
+
         Dictionary<string, List<string>> permissions = null;
         XmlDocument xml = null;
+        static private object lObject = new object();
 
         private void WriteToXml()
         {
@@ -29,10 +35,22 @@ namespace RBACCommons
                 }
             }
             writer.Save("RBAC.xml");
+            lastEdit = File.GetLastWriteTime("RBAC.xml");
+            NotifyAll();
         }
 
-        private RBACManager()
+        private void ReloadCheck()
         {
+            lock (lObject)
+            {
+                DateTime edit = File.GetLastWriteTime("RBAC.xml");
+                if (lastEdit != edit) ReloadRBAC();
+            }
+        }
+
+        private void ReloadRBAC()
+        {
+
             permissions = new Dictionary<string, List<string>>();
 
             xml = new XmlDocument();
@@ -47,7 +65,15 @@ namespace RBACCommons
                     perms.Add(perm.FirstChild.Value);
                 }
                 permissions.Add(name, perms);
-            } 
+            }
+            lastEdit = File.GetLastWriteTime("RBAC.xml");
+            NotifyAll();
+        }
+
+        private RBACManager()
+        {
+            observers = new List<IRBACObserver>();
+            ReloadRBAC();
         }
 
 
@@ -55,13 +81,20 @@ namespace RBACCommons
         {
             if(instance == null)
             {
-                instance = new RBACManager();
+                lock (lObject)
+                {
+                    if (instance == null)
+                    {
+                        instance = new RBACManager();
+                    }
+                }
             }
             return instance;
         }
 
         public void AddGroup(string group)
         {
+            ReloadCheck();
             if (permissions.ContainsKey(group))
                 throw new RBACAlreadyExistsException("Group already exists");
             permissions.Add(group, new List<string>());
@@ -70,6 +103,7 @@ namespace RBACCommons
 
         public void AddPermission(string group, string perm)
         {
+            ReloadCheck();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group not found");
             if (permissions[group].Contains(perm))
@@ -80,11 +114,13 @@ namespace RBACCommons
 
         public Dictionary<string, List<string>> GetAll()
         {
+            ReloadCheck();
             return permissions;
         }
 
         public List<string> GetPermsForGroup(string group)
         {
+            ReloadCheck();
             if (permissions.ContainsKey(group))
             {
                 return permissions[group];
@@ -94,6 +130,7 @@ namespace RBACCommons
 
         public bool IsGroupAllowed(string group, string perm)
         {
+            ReloadCheck();
             if (permissions.ContainsKey(group) && permissions[group].Contains(perm))
                 return true;
             return false;
@@ -101,6 +138,7 @@ namespace RBACCommons
 
         public void RemoveGroup(string group)
         {
+            ReloadCheck();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group doesnt exist");
             permissions.Remove(group);
@@ -109,12 +147,26 @@ namespace RBACCommons
 
         public void RemovePermission(string group, string perm)
         {
+            ReloadCheck();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group doesnt exist");
             if (!permissions[group].Contains(perm))
                 throw new RBACNotFoundException("Permission doesnt exist");
             permissions[group].Remove(perm);
             WriteToXml();
+        }
+
+        public void AddObserver(IRBACObserver observer)
+        {
+            observers.Add(observer);
+        }
+
+        private void NotifyAll()
+        {
+            foreach (var observer in observers)
+            {
+                observer.NotifyUpdate();
+            }
         }
     }
 }

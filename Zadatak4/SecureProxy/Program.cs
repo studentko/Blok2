@@ -15,7 +15,8 @@ namespace SecureProxy
     {
         static void Main(string[] args)
         {
-            NetTcpBinding binding = new NetTcpBinding();
+
+            /*NetTcpBinding binding = new NetTcpBinding();
 
             binding.Security.Mode = SecurityMode.Transport;
             //binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
@@ -83,8 +84,12 @@ namespace SecureProxy
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-            }
+            }*/
 
+            Processor p = new Processor(new WinAuthClient("net.tcp://localhost:12354/ICommonService"));
+
+            p.Delete("test");
+            p.Create("test");
             Console.Read();
         }
     }

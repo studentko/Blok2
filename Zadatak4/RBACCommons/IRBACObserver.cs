@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WCFCommons
+namespace RBACCommons
 {
-    public class Class1
+    public interface IRBACObserver
     {
+        void NotifyUpdate();
     }
 }

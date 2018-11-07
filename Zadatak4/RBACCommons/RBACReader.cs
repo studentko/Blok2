@@ -11,5 +11,6 @@ namespace RBACCommons
         bool IsGroupAllowed(string group, string perm);
         List<string> GetPermsForGroup(string group);
         Dictionary<string, List<string>> GetAll();
+        void AddObserver(IRBACObserver observer);
     }
 }

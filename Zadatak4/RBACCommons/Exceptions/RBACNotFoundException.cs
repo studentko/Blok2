@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RBACCommons
 {
-    class RBACNotFoundException : Exception
+    public class RBACNotFoundException : Exception
     {
         public RBACNotFoundException()
         {

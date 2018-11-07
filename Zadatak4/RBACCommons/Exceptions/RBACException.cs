@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RBACCommons
 {
-    class RBACException : Exception
+    public class RBACException : Exception
     {
         public RBACException()
         {

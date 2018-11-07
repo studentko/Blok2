@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IRBACManager.cs" />
+    <Compile Include="IRBACObserver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Exceptions\RBACAlreadyExistsException.cs" />
     <Compile Include="Exceptions\RBACException.cs" />
