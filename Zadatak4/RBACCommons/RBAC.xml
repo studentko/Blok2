@@ -5,12 +5,14 @@
       <Perm>Read</Perm>
       <Perm>Modify</Perm>
       <Perm>Delete</Perm>
+      <Perm>Access</Perm>
     </Permissions>
   </Group>
   <Group>
     <Name>wcfReader</Name>
     <Permissions>
       <Perm>Read</Perm>
+      <Perm>Access</Perm>
     </Permissions>
   </Group>
 </Groups>

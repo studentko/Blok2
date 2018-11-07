@@ -31,7 +31,7 @@ namespace RBACCommons
             writer.Save("RBAC.xml");
         }
 
-        public RBACManager()
+        private RBACManager()
         {
             permissions = new Dictionary<string, List<string>>();
 
