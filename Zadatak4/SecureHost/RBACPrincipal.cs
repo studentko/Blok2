@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using WCFCommons;
 
 namespace SecureHost
 {
@@ -14,6 +15,8 @@ namespace SecureHost
         private WindowsIdentity ident;
 
         HashSet<String> roles;
+
+        SIEM log;
 
         public IIdentity Identity
         {
@@ -25,7 +28,12 @@ namespace SecureHost
 
         public bool IsInRole(string role)
         {
-            return roles.Contains(role);
+            bool pass = roles.Contains(role);
+            if (!pass)
+            {
+                log.LogError(String.Format( "User {0} does not have the {1} permission!", ident.Name, role));
+            }
+            return pass;
         }
 
         public RBACPrincipal(WindowsIdentity ident)
@@ -33,6 +41,8 @@ namespace SecureHost
             this.ident = ident;
 
             roles = new HashSet<string>();
+
+            log = new SIEM("Projekat 4");
 
             RBACManager rbacMgr = RBACManager.GetInstance();
 
