@@ -11,8 +11,11 @@ namespace RBACCommons
     {
         static RBACManager instance = null;
 
+        DateTime lastReload;
+
         Dictionary<string, List<string>> permissions = null;
         XmlDocument xml = null;
+        static private object lObject = new object();
 
         private void WriteToXml()
         {
@@ -31,7 +34,15 @@ namespace RBACCommons
             writer.Save("RBAC.xml");
         }
 
-        private RBACManager()
+        private void ReloadCheck()
+        {
+            lock (lObject)
+            {
+                if (DateTime.Now - lastReload > TimeSpan.FromSeconds(1)) ReloadRBAC();
+            }
+        }
+
+        private void ReloadRBAC()
         {
             permissions = new Dictionary<string, List<string>>();
 
@@ -47,7 +58,13 @@ namespace RBACCommons
                     perms.Add(perm.FirstChild.Value);
                 }
                 permissions.Add(name, perms);
-            } 
+            }
+            lastReload = DateTime.Now;
+        }
+
+        private RBACManager()
+        {
+            ReloadRBAC();
         }
 
 
@@ -55,13 +72,20 @@ namespace RBACCommons
         {
             if(instance == null)
             {
-                instance = new RBACManager();
+                lock (lObject)
+                {
+                    if (instance == null)
+                    {
+                        instance = new RBACManager();
+                    }
+                }
             }
             return instance;
         }
 
         public void AddGroup(string group)
         {
+            ReloadCheck();
             if (permissions.ContainsKey(group))
                 throw new RBACAlreadyExistsException("Group already exists");
             permissions.Add(group, new List<string>());
@@ -70,6 +94,7 @@ namespace RBACCommons
 
         public void AddPermission(string group, string perm)
         {
+            ReloadCheck();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group not found");
             if (permissions[group].Contains(perm))
@@ -80,11 +105,13 @@ namespace RBACCommons
 
         public Dictionary<string, List<string>> GetAll()
         {
+            ReloadCheck();
             return permissions;
         }
 
         public List<string> GetPermsForGroup(string group)
         {
+            ReloadCheck();
             if (permissions.ContainsKey(group))
             {
                 return permissions[group];
@@ -94,6 +121,7 @@ namespace RBACCommons
 
         public bool IsGroupAllowed(string group, string perm)
         {
+            ReloadCheck();
             if (permissions.ContainsKey(group) && permissions[group].Contains(perm))
                 return true;
             return false;
@@ -101,6 +129,7 @@ namespace RBACCommons
 
         public void RemoveGroup(string group)
         {
+            ReloadCheck();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group doesnt exist");
             permissions.Remove(group);
@@ -109,6 +138,7 @@ namespace RBACCommons
 
         public void RemovePermission(string group, string perm)
         {
+            ReloadCheck();
             if (!permissions.ContainsKey(group))
                 throw new RBACNotFoundException("Group doesnt exist");
             if (!permissions[group].Contains(perm))

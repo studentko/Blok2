@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="CommonServiceException.cs" />
     <Compile Include="CommonEnums.cs" />
     <Compile Include="ICommonService.cs" />

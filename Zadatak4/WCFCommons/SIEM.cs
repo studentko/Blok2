@@ -9,33 +9,25 @@ namespace WCFCommons
 {
     public class SIEM
     {
-        static SIEM instance = null;
+        static object lObject = new object();
 
         EventLog log;
-        string appName = "Projekat 4";
 
-        private SIEM()
+        public SIEM(string source)
         {
-            if (!EventLog.SourceExists(appName))
+            lock (lObject)
             {
-                EventLog.CreateEventSource(appName, "Application");
+                if (!EventLog.SourceExists(source))
+                {
+                    EventLog.CreateEventSource(source, "Application");
+                }
+                log = new EventLog("Application", Environment.MachineName, source);
             }
-
-            log = new EventLog("Application", Environment.MachineName, appName);
         }
 
         ~SIEM()
         {
             log.Close();
-        }
-
-        public static SIEM GetInstance()
-        {
-            if(instance == null)
-            {
-                instance = new SIEM();
-            }
-            return instance;
         }
 
         public void LogInformation(string message)
