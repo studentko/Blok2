@@ -8,6 +8,10 @@ namespace WCFCommons
 {
     public class CommonServiceException
     {
+        public CommonServiceException(string msg)
+        {
+            Message = msg;
+        }
         string Message { get; set; }
     }
 }

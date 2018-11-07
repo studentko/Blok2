@@ -22,7 +22,6 @@ namespace SecureHost
             host.Open();
             Console.WriteLine("Host opened. Press key to close");
             Console.Read();
-            
         }
     }
 }
