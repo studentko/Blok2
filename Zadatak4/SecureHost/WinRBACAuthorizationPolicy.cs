@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IdentityModel.Claims;
 using System.IdentityModel.Policy;
 using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -59,12 +62,33 @@ namespace SecureHost
                 {
                     //Audit.AuthenticationSuccess(windowsIdentity.Name);
                     principal = new RBACPrincipal(windowsIdentity);
+                } else
+                {
+                    X509Certificate2 cert = GetCertificate(identity);
+                    //Console.WriteLine(cert.SubjectName.Name);
+                    principal = new RBACPrincipal(cert, identity);
                 }
 
                 return principal;
             }
         }
+        private X509Certificate2 GetCertificate(IIdentity identity)
+        {
+            try
+            {
+                // X509Identity is an internal class, so we cannot directly access it
+                Type x509IdentityType = identity.GetType();
 
+                // The certificate is stored inside a private field of this class
+                FieldInfo certificateField = x509IdentityType.GetField("certificate", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                return (X509Certificate2)certificateField.GetValue(identity);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
 
     }
 }

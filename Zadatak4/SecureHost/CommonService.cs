@@ -83,7 +83,8 @@ namespace SecureHost
 
         public void Delete(string fileName)
         {
-            if (!locks.TryGetValue(fileName, out object lo))
+            object lo;
+            if (!locks.TryGetValue(fileName, out lo))
             {
                 lo = lObject;
             }
@@ -107,7 +108,8 @@ namespace SecureHost
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Write")]
         public void Modify(string fileName, string data, EModifyType modifyType)
         {
-            if (!locks.TryGetValue(fileName, out object lo))
+            object lo;
+            if (!locks.TryGetValue(fileName, out lo))
             {
                 lo = lObject;
             }
@@ -128,7 +130,8 @@ namespace SecureHost
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Read")]
         public string Read(string fileName)
         {
-            if (!locks.TryGetValue(fileName, out object lo))
+            object lo;
+            if (!locks.TryGetValue(fileName, out lo))
             {
                 lo = lObject;
             }

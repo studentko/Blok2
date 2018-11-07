@@ -16,4 +16,14 @@
       <Perm>Access</Perm>
     </Permissions>
   </Group>
+  <Group>
+    <Name>SEDMAK-PC\wcfAdmin</Name>
+    <Permissions>
+      <Perm>Read</Perm>
+      <Perm>Write</Perm>
+      <Perm>Delete</Perm>
+      <Perm>Access</Perm>
+      <Perm>Administrate</Perm>
+    </Permissions>
+  </Group>
 </Groups>

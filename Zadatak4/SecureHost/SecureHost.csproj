@@ -57,6 +57,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CertificateManager\CertificateManager.csproj">
+      <Project>{29d6983b-ae50-4fee-a853-13afb2a456ec}</Project>
+      <Name>CertificateManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RBACCommons\RBACCommons.csproj">
       <Project>{f35a84c1-b9e8-44dc-830c-863011c2a742}</Project>
       <Name>RBACCommons</Name>

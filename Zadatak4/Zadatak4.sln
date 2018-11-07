@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RBACCommons", "RBACCommons\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RBACAdmin", "RBACAdmin\RBACAdmin.csproj", "{F3B3AC3D-1AEC-4C7C-8A0D-1CB64AC145C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertificateManager", "CertificateManager\CertificateManager.csproj", "{29D6983B-AE50-4FEE-A853-13AFB2A456EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{F3B3AC3D-1AEC-4C7C-8A0D-1CB64AC145C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3B3AC3D-1AEC-4C7C-8A0D-1CB64AC145C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3B3AC3D-1AEC-4C7C-8A0D-1CB64AC145C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29D6983B-AE50-4FEE-A853-13AFB2A456EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29D6983B-AE50-4FEE-A853-13AFB2A456EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29D6983B-AE50-4FEE-A853-13AFB2A456EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29D6983B-AE50-4FEE-A853-13AFB2A456EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

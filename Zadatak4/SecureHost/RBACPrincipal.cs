@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +13,9 @@ namespace SecureHost
     class RBACPrincipal : IPrincipal
     {
 
-        private WindowsIdentity ident;
+        private IIdentity ident;
 
-        HashSet<String> roles;
+        HashSet<String> roles = new HashSet<string>();
 
         SIEM log;
 
@@ -40,7 +41,7 @@ namespace SecureHost
         {
             this.ident = ident;
 
-            roles = new HashSet<string>();
+           
 
             log = new SIEM("Projekat 4");
 
@@ -59,6 +60,40 @@ namespace SecureHost
                     Console.WriteLine("RBACPrincipal exception: {0}", e.Message);
                 }
             }
+        }
+
+        public RBACPrincipal(X509Certificate2 clientCert, IIdentity ident)
+        {
+            this.ident = ident;
+
+            string organization = null;
+            string group = null;
+
+            string[] nameParts = clientCert.SubjectName.Name.Split(',');
+            foreach(var pp in nameParts)
+            {
+                string[] keyVal = pp.Trim().Split('=');
+                if (keyVal[0] == "O")
+                {
+                    organization = keyVal[1];
+                } else if (keyVal[0] == "OU")
+                {
+                    group = keyVal[1];
+                }
+
+            }
+
+            string finalGroupName = organization == null ? group : organization + "\\" + group;
+
+            try
+            {
+                roles.UnionWith(RBACManager.GetInstance().GetPermsForGroup(finalGroupName));
+            }
+            catch (Exception)
+            {
+                // todo for log
+            }
+
         }
     }
 }
