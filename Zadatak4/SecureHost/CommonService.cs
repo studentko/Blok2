@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Permissions;
 using System.Security.Principal;
 using System.ServiceModel;
 using System.Text;
@@ -61,6 +62,7 @@ namespace SecureHost
             ownership.Save("ownership.xml");
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Administrate")]
         public void Create(string fileName)
         {
             lock (lObject)
@@ -96,6 +98,7 @@ namespace SecureHost
             }
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Write")]
         public void Modify(string fileName, string data, EModifyType modifyType)
         {
             if (!locks.TryGetValue(fileName, out object lo))
@@ -116,6 +119,7 @@ namespace SecureHost
             }
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Read")]
         public string Read(string fileName)
         {
             if (!locks.TryGetValue(fileName, out object lo))

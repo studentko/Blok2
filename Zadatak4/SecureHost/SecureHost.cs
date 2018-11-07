@@ -43,7 +43,7 @@ namespace SecureHost
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 
             
-            serviceHost = new ServiceHost(typeof(WinAuthCommonService));
+            serviceHost = new ServiceHost(typeof(CommonService));
             serviceHost.AddServiceEndpoint(typeof(ICommonService), binding, GetHostAddress());
 
             List<IAuthorizationPolicy> policies = new List<IAuthorizationPolicy>()
