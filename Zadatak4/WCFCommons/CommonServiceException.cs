@@ -15,6 +15,6 @@ namespace WCFCommons
             Message = msg;
         }
         [DataMember]
-        string Message { get; set; }
+        public string Message { get; set; }
     }
 }

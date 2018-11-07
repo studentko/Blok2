@@ -8,9 +8,14 @@ using WCFCommons;
 
 namespace SecureProxy
 {
-    class WinAuthClient
+    class WinAuthClient : IWCFClient
     {
         public ICommonService Proxy { get; private set; }
+
+        public ICommonService GetProxy()
+        {
+            return Proxy;
+        }
 
         public WinAuthClient(string address)
         {
