@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RBACCommons
 {
-    class RBACAlreadyExistsException : Exception
+    public class RBACAlreadyExistsException : Exception
     {
         public RBACAlreadyExistsException()
         {
