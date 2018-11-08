@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Security.Permissions;
 using System.Security.Principal;
 using System.ServiceModel;
@@ -65,26 +66,51 @@ namespace SecureHost
             ownership.Save("ownership.xml");
         }
 
-        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Administrate")]
-        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
+        private void AuthAndAutorize(string funcName, string[] roles)
+        {
+            if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)
+            {
+                log.LogError(String.Format("{0}@{1}: Authentication failed for user {2}", DateTime.Now.ToLongTimeString(), funcName, Thread.CurrentPrincipal.Identity.Name));
+                throw new SecurityException("Access denied");
+            }
+            foreach (var role in roles)
+            {
+                if (!Thread.CurrentPrincipal.IsInRole(role))
+                {
+                    log.LogError(String.Format("{0}@{1}: Authorization failed for user {2}, permission {3}", DateTime.Now.ToLongTimeString(), funcName, Thread.CurrentPrincipal.Identity.Name, role));
+                    throw new SecurityException("Access denied");
+                }
+            }
+
+        }
+
+        //[PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Administrate")]
+        //[PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
         public void Create(string fileName)
         {
+            AuthAndAutorize("Create", new string[] { "Administrate", "Access" });
             lock (lObject)
             {
                 //DEBUG
                 if (Thread.CurrentPrincipal.Identity.Name == "")
                     Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity("Test"), new string[] { "Administrate" });
                 //END
-                if (File.Exists(fileName)) throw new FaultException<CommonServiceException>(new CommonServiceException("File already exists"));
+                if (File.Exists(fileName))
+                {
+                    log.LogError(String.Format("{0}@Create: User {1}, file {2} already exists", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
+                    throw new FaultException<CommonServiceException>(new CommonServiceException("File already exists"));
+                }
+                log.LogInformation(String.Format("{0}@Create: User {1}, created file {2}", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
                 File.Create(fileName).Close();
                 SetOwner(fileName, Thread.CurrentPrincipal.Identity.Name);
                 locks.Add(fileName, new object());
             }
         }
 
-        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
+        //[PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
         public void Delete(string fileName)
         {
+            AuthAndAutorize("Delete", new string[] { "Access" });
             object lo;
             if (!locks.TryGetValue(fileName, out lo))
             {
@@ -96,21 +122,27 @@ namespace SecureHost
                 if (Thread.CurrentPrincipal.Identity.Name == "")
                     Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity("Test"), new string[] { "Administrate" });
                 //END
-                if (!File.Exists(fileName)) throw new FaultException<CommonServiceException>(new CommonServiceException("File doesnt exist"));
-                if (GetOwner(fileName) != Thread.CurrentPrincipal.Identity.Name && !Thread.CurrentPrincipal.IsInRole("Administrate"))
+                if (!File.Exists(fileName))
                 {
-                    log.LogError(String.Format("User {0} lacked Administrate permission or file ownership", Thread.CurrentPrincipal.Identity.Name));
+                    log.LogError(String.Format("{0}@Delete: User {1}, file {2} doesnt exist", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
                     throw new FaultException<CommonServiceException>(new CommonServiceException("File doesnt exist"));
                 }
+                if (GetOwner(fileName) != Thread.CurrentPrincipal.Identity.Name && !Thread.CurrentPrincipal.IsInRole("Administrate"))
+                {
+                    log.LogError(String.Format("{0}@Delete: User {1}, is not the owner of file {2} and is not Administrator", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
+                    throw new FaultException<CommonServiceException>(new CommonServiceException("File doesnt exist"));
+                }
+                log.LogInformation(String.Format("{0}@Delete: User {1}, deleted file {2}", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
                 File.Delete(fileName);
                 locks.Remove(fileName);
             }
         }
 
-        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Write")]
-        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
+        //[PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Write")]
+        //[PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
         public void Modify(string fileName, string data, EModifyType modifyType)
         {
+            AuthAndAutorize("Modify", new string[] { "Access", "Modify" });
             object lo;
             if (!locks.TryGetValue(fileName, out lo))
             {
@@ -118,22 +150,29 @@ namespace SecureHost
             }
             lock (lo)
             {
-                if (!File.Exists(fileName)) throw new FaultException<CommonServiceException>(new CommonServiceException("File doesnt exist"));
+                if (!File.Exists(fileName))
+                {
+                    log.LogError(String.Format("{0}@Modify: User {1}, file {2} doesnt exist", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
+                    throw new FaultException<CommonServiceException>(new CommonServiceException("File doesnt exist"));
+                }
                 if (modifyType == EModifyType.Append)
                 {
+                    log.LogInformation(String.Format("{0}@Modify: User {1}, appended to file {2}", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
                     File.AppendAllText(fileName, data);
                 }
                 else
                 {
+                    log.LogInformation(String.Format("{0}@Modify: User {1}, owerwrote file {2}", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
                     File.WriteAllText(fileName, data);
                 }
             }
         }
 
-        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Read")]
-        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
+        //[PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Read")]
+        //[PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
         public string Read(string fileName)
         {
+            AuthAndAutorize("Read", new string[] { "Access", "Read" });
             object lo;
             if (!locks.TryGetValue(fileName, out lo))
             {
@@ -141,7 +180,12 @@ namespace SecureHost
             }
             lock (lo)
             {
-                if (!File.Exists(fileName)) throw new FaultException<CommonServiceException>(new CommonServiceException("File doesnt exist"));
+                if (!File.Exists(fileName))
+                {
+                    log.LogError(String.Format("{0}@Read: User {1}, file {2} doesnt exist", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
+                    throw new FaultException<CommonServiceException>(new CommonServiceException("File doesnt exist"));
+                }
+                log.LogInformation(String.Format("{0}@Read: User {1}, read file {2}", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
                 return File.ReadAllText(fileName);
             }
         }

@@ -29,12 +29,7 @@ namespace SecureHost
 
         public bool IsInRole(string role)
         {
-            bool pass = roles.Contains(role);
-            if (!pass)
-            {
-                log.LogError(String.Format( "User {0} does not have the {1} permission!", ident.Name, role));
-            }
-            return pass;
+            return roles.Contains(role);
         }
 
         public RBACPrincipal(WindowsIdentity ident)
