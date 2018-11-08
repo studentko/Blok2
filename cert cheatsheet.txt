@@ -1,0 +1,19 @@
+makecert -n "CN=TestCA" -r -sv TestCA.pvk TestCA.cer
+
+
+
+makecert -sv WCFService.pvk -iv TestCA.pvk -n "CN=wcfservice" -pe -ic TestCA.cer WCFService.cer -sr localmachine -ss My -sky exchange
+
+pvk2pfx.exe /pvk WCFService.pvk /pi 123 /spc WCFService.cer /pfx WCFService.pfx
+
+"C:\Program Files\Windows Resource Kits\Tools\winhttpcertcfg.exe" -g -c LOCAL_MACHINE\My -s wcfservice -a wcfservice
+
+
+
+makecert -sv WCFClient.pvk -iv TestCA.pvk -n "CN=wcfclient,OU=wcfAdmin,O=SEDMAK-PC" -pe -ic TestCA.cer WCFClient.cer -sr localmachine -ss My -sky exchange
+
+pvk2pfx.exe /pvk WCFClient.pvk /pi 123 /spc WCFClient.cer /pfx WCFClient.pfx
+
+winhttpcertcfg -g -c LOCAL_MACHINE\My -s wcfclient -a wcfclient
+
+
