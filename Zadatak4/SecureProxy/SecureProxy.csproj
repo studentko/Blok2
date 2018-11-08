@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CertClient.cs" />
     <Compile Include="IWCFClient.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="Program.cs" />

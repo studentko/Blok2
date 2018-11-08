@@ -66,6 +66,7 @@ namespace SecureHost
         }
 
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Administrate")]
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
         public void Create(string fileName)
         {
             lock (lObject)
@@ -81,6 +82,7 @@ namespace SecureHost
             }
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
         public void Delete(string fileName)
         {
             object lo;
@@ -106,6 +108,7 @@ namespace SecureHost
         }
 
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Write")]
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
         public void Modify(string fileName, string data, EModifyType modifyType)
         {
             object lo;
@@ -128,6 +131,7 @@ namespace SecureHost
         }
 
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Read")]
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
         public string Read(string fileName)
         {
             object lo;

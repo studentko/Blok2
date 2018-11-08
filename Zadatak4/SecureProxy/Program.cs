@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Principal;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,10 +87,15 @@ namespace SecureProxy
                 Console.WriteLine(e.Message);
             }*/
 
-            Processor p = new Processor(new WinAuthClient("net.tcp://localhost:12354/ICommonService"));
+            //Processor p = new Processor(new WinAuthClient("net.tcp://10.1.212.156:12354/ICommonService"));
+            Processor p = new Processor(new CertClient("net.tcp://10.1.212.156:12354/ICommonService", "B2Z4wcfservice"));
 
-            p.Delete("test");
-            p.Create("test");
+            p.Create("test.txt");
+            p.Modify("test.txt", "data", EModifyType.Append);
+            string test;
+            p.Read("test.txt", out test);
+            Console.WriteLine(test);
+            p.Delete("test.txt");
             Console.Read();
         }
     }
