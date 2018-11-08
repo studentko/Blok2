@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CertConst.cs" />
     <Compile Include="CertManager.cs" />
     <Compile Include="ClientCertValidator.cs" />
     <Compile Include="DigitalSignature.cs" />

@@ -22,9 +22,9 @@ namespace SecureProxy
 
             Console.WriteLine("Enter IP address:");
             input = Console.ReadLine();
-
+            
             Console.WriteLine("Select Security type:\n1) Windows\n2) Certificate");
-            inChar = (char)Console.Read();
+            inChar = ReadChar();
 
             if (inChar == '1')
             {
@@ -32,7 +32,7 @@ namespace SecureProxy
             }
             else if (inChar == '2')
             {
-                p = new Processor(new CertClient("net.tcp://" + input + ":12355/ICommonService", "B2Z4wcfservice"));
+                p = new Processor(new CertClient("net.tcp://" + input + ":12355/ICommonService", CertConst.SERVER_CERT_NAME));
             }
 
             else return;
@@ -45,7 +45,7 @@ namespace SecureProxy
                 Console.WriteLine("3) Read file");
                 Console.WriteLine("4) Delete file");
                 Console.WriteLine("5) Exit");
-                inChar = (char)Console.Read();
+                inChar = ReadChar();
                 switch (inChar)
                 {
                     case '1':
@@ -88,6 +88,19 @@ namespace SecureProxy
             Console.WriteLine(test);
             p.Delete("test.txt");
             Console.Read();*/
+        }
+
+        public static char ReadChar()
+        {
+            char ret = ' ';
+
+            string input = Console.ReadLine();
+            if (input.Length > 0)
+            {
+                ret = input[0];
+            }
+
+            return ret;
         }
     }
 }

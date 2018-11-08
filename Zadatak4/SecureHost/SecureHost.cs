@@ -16,19 +16,21 @@ namespace SecureHost
     public class SecureHost
     {
 
+        public const string SOURCE_NAME_WIN = "Zadatak 4/Win";
+        public const string SOURCE_NAME_CERT = "Zadatak 4/Cert";
+
         public SecureHostConfig HostConfig { get; private set; }
 
         private ServiceHost serviceHost;
 
         SIEM log;
 
-        public static string SourceName;
-
         public SecureHost(SecureHostConfig hostConfig)
         {
             HostConfig = hostConfig.Clone();
-            SourceName = "Projekat 4/" + (hostConfig.AuthenticationType == EAuthType.Windows ? "Win" : "Cert");
-            log = new SIEM(SourceName);
+            
+            log = new SIEM(hostConfig.AuthenticationType == EAuthType.Windows ?
+                SOURCE_NAME_WIN : SOURCE_NAME_CERT);
         }
 
         public string GetHostAddress()
@@ -59,7 +61,7 @@ namespace SecureHost
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
     
-            serviceHost = new ServiceHost(typeof(CommonService));
+            serviceHost = new ServiceHost(typeof(WinCommonService));
 
             serviceHost.AddServiceEndpoint(typeof(ICommonService), binding, GetHostAddress());
 
@@ -68,7 +70,6 @@ namespace SecureHost
                 new WinRBACAuthorizationPolicy()
             };
 
-            //serviceHost.Authorization.ServiceAuthorizationManager = new MyAuthorizationManager();
             serviceHost.Authorization.ExternalAuthorizationPolicies = policies.AsReadOnly();
             serviceHost.Authorization.PrincipalPermissionMode = PrincipalPermissionMode.Custom;
 
@@ -79,9 +80,8 @@ namespace SecureHost
         {
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Certificate;
-            //binding.Security.Transport.
 
-            serviceHost = new ServiceHost(typeof(CommonService));
+            serviceHost = new ServiceHost(typeof(CertCommonService));
             serviceHost.AddServiceEndpoint(typeof(ICommonService), binding, GetHostAddress());
 
             List<IAuthorizationPolicy> policies = new List<IAuthorizationPolicy>()
@@ -90,21 +90,13 @@ namespace SecureHost
             };
 
             serviceHost.Credentials.ClientCertificate.Authentication.CertificateValidationMode = X509CertificateValidationMode.ChainTrust;
-
             serviceHost.Credentials.ClientCertificate.Authentication.RevocationMode = X509RevocationMode.NoCheck;
 
-            serviceHost.Credentials.ServiceCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.CurrentUser, "B2Z4wcfservice");
-            //serviceHost.Credentials.ServiceCertificate.Certificate = CertManager.GetCertificateFromFile("");
+            serviceHost.Credentials.ServiceCertificate.Certificate = 
+                CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.CurrentUser, CertConst.SERVER_CERT_NAME);
 
             serviceHost.Authorization.ExternalAuthorizationPolicies = policies.AsReadOnly();
             serviceHost.Authorization.PrincipalPermissionMode = PrincipalPermissionMode.Custom;
-
-            // serviceHost.Credentials.ClientCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, "wcfclient");
-
-            //serviceHost.Authorization.ExternalAuthorizationPolicies = policies.AsReadOnly();
-            //serviceHost.Authorization.PrincipalPermissionMode = PrincipalPermissionMode.Custom;
-
-
 
             serviceHost.Open();
         }

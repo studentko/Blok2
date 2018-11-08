@@ -1,4 +1,5 @@
-﻿using RBACCommons;
+﻿using CertificateManager;
+using RBACCommons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +18,6 @@ namespace SecureHost
 
         HashSet<String> roles = new HashSet<string>();
 
-        SIEM log;
-
         public IIdentity Identity
         {
             get
@@ -36,10 +35,6 @@ namespace SecureHost
         {
             this.ident = ident;
 
-           
-
-            log = new SIEM("Projekat 4");
-
             RBACManager rbacMgr = RBACManager.GetInstance();
 
             foreach (var group in ident.Groups)
@@ -47,12 +42,13 @@ namespace SecureHost
                 try
                 {
                     IdentityReference ntAcc = group.Translate(typeof(NTAccount));
-                    List<string> perms = rbacMgr.GetPermsForGroup(ntAcc.Value);
+                    //List<string> perms = rbacMgr.GetPermsForGroup(ntAcc.Value);
+                    List<string> perms = rbacMgr.GetPermsForGroup(Formatter.ParseName(ntAcc.Value));
                     roles.UnionWith(perms);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("RBACPrincipal exception: {0}", e.Message);
+                    //Console.WriteLine("RBACPrincipal exception: {0}", e.Message);
                 }
             }
         }
@@ -78,7 +74,8 @@ namespace SecureHost
 
             }
 
-            string finalGroupName = organization == null ? group : organization + "\\" + group;
+            //string finalGroupName = organization == null ? group : organization + "\\" + group;
+            string finalGroupName = group;
 
             try
             {
@@ -86,7 +83,6 @@ namespace SecureHost
             }
             catch (Exception)
             {
-                // todo for log
             }
 
         }

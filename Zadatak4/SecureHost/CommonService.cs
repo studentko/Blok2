@@ -18,13 +18,13 @@ namespace SecureHost
     {
         Dictionary<string, object> locks;
         object lObject;
-        SIEM log;
+        protected SIEM log;
 
-        public CommonService(SIEM log)
+        public CommonService()
         {
             locks = new Dictionary<string, object>();
             lObject = new object();
-            this.log = log;
+            log = new SIEM("Zadatak 4");
         }
 
         private string GetOwner(string fileName)
@@ -71,14 +71,14 @@ namespace SecureHost
             if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)
             {
                 log.LogError(String.Format("{0}@{1}: Authentication failed for user {2}", DateTime.Now.ToLongTimeString(), funcName, Thread.CurrentPrincipal.Identity.Name));
-                throw new SecurityException("Access denied");
+                throw new SecurityException("Access denied: Not authenticated");
             }
             foreach (var role in roles)
             {
                 if (!Thread.CurrentPrincipal.IsInRole(role))
                 {
                     log.LogError(String.Format("{0}@{1}: Authorization failed for user {2}, permission {3}", DateTime.Now.ToLongTimeString(), funcName, Thread.CurrentPrincipal.Identity.Name, role));
-                    throw new SecurityException("Access denied");
+                    throw new SecurityException("Access denied: Not authorized");
                 }
             }
 
@@ -188,6 +188,22 @@ namespace SecureHost
                 log.LogInformation(String.Format("{0}@Read: User {1}, read file {2}", DateTime.Now.ToLongTimeString(), Thread.CurrentPrincipal.Identity.Name, fileName));
                 return File.ReadAllText(fileName);
             }
+        }
+    }
+
+    class WinCommonService : CommonService
+    {
+        public WinCommonService()
+        {
+            log = new SIEM(SecureHost.SOURCE_NAME_WIN);
+        }
+    }
+
+    class CertCommonService : CommonService
+    {
+        public CertCommonService()
+        {
+            log = new SIEM(SecureHost.SOURCE_NAME_CERT);
         }
     }
 }
