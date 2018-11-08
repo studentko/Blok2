@@ -49,6 +49,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RBACPrincipal.cs" />
+    <Compile Include="RBACPrincipalCache.cs" />
     <Compile Include="SecureHost.cs" />
     <Compile Include="SecureHostConfig.cs" />
     <Compile Include="WinRBACAuthorizationPolicy.cs" />

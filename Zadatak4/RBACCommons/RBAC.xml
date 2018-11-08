@@ -26,4 +26,24 @@
       <Perm>Administrate</Perm>
     </Permissions>
   </Group>
+  <Group>
+    <Name>P04-10\wcfAdmin</Name>
+    <Permissions>
+      <Perm>Read</Perm>
+      <Perm>Write</Perm>
+      <Perm>Delete</Perm>
+      <Perm>Access</Perm>
+      <Perm>Administrate</Perm>
+    </Permissions>
+  </Group>
+  <Group>
+    <Name>P04-11\wcfAdmin</Name>
+    <Permissions>
+      <Perm>Read</Perm>
+      <Perm>Write</Perm>
+      <Perm>Delete</Perm>
+      <Perm>Access</Perm>
+      <Perm>Administrate</Perm>
+    </Permissions>
+  </Group>
 </Groups>

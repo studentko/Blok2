@@ -20,9 +20,15 @@ namespace SecureHost
 
         private ServiceHost serviceHost;
 
+        SIEM log;
+
+        public static string SourceName;
+
         public SecureHost(SecureHostConfig hostConfig)
         {
             HostConfig = hostConfig.Clone();
+            SourceName = "Projekat 4/" + (hostConfig.AuthenticationType == EAuthType.Windows ? "Win" : "Cert");
+            log = new SIEM(SourceName);
         }
 
         public string GetHostAddress()
@@ -41,6 +47,11 @@ namespace SecureHost
                     OpenCertAuthService();
                     break;
             }
+        }
+
+        public void Close()
+        {
+            serviceHost.Close();
         }
 
         private void OpenWinAuthService()
@@ -82,7 +93,8 @@ namespace SecureHost
 
             serviceHost.Credentials.ClientCertificate.Authentication.RevocationMode = X509RevocationMode.NoCheck;
 
-            serviceHost.Credentials.ServiceCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, "wcfservice");
+            serviceHost.Credentials.ServiceCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.CurrentUser, "B2Z4wcfservice");
+            //serviceHost.Credentials.ServiceCertificate.Certificate = CertManager.GetCertificateFromFile("");
 
             serviceHost.Authorization.ExternalAuthorizationPolicies = policies.AsReadOnly();
             serviceHost.Authorization.PrincipalPermissionMode = PrincipalPermissionMode.Custom;
@@ -96,7 +108,6 @@ namespace SecureHost
 
             serviceHost.Open();
         }
-
 
     }
 }

@@ -10,18 +10,32 @@ namespace SecureHost
     {
         static void Main(string[] args)
         {
-            SecureHostConfig hostConfig = new SecureHostConfig()
+            SecureHostConfig winConfig = new SecureHostConfig()
             {
                 AuthenticationType = WCFCommons.EAuthType.Windows,
                 Ip = "0.0.0.0",
                 Port = 12354
             };
 
-            SecureHost host = new SecureHost(hostConfig);
+            SecureHostConfig certConfig = new SecureHostConfig()
+            {
+                AuthenticationType = WCFCommons.EAuthType.Cert,
+                Ip = "0.0.0.0",
+                Port = 12355
+            };
+
+            Const.SourceName = "Projekat 4/" + (hostConfig.AuthenticationType == EAuthType.Windows ? "Win" : "Cert")
+
+            SecureHost winHost = new SecureHost(winConfig);
+            SecureHost certHost = new SecureHost(certConfig);
             Console.WriteLine("Opening secure host...");
-            host.Open();
+            winHost.Open();
+            certHost.Open();
+
             Console.WriteLine("Host opened. Press key to close");
             Console.Read();
+            
+
 
             //CommonService cs = new CommonService();
             //cs.Modify("TestFile.txt", "Failed Test", WCFCommons.EModifyType.Overwrite);

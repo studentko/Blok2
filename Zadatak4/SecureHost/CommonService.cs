@@ -20,11 +20,11 @@ namespace SecureHost
         object lObject;
         SIEM log;
 
-        public CommonService()
+        public CommonService(SIEM log)
         {
             locks = new Dictionary<string, object>();
             lObject = new object();
-            log = new SIEM("Projekat 4");
+            this.log = log;
         }
 
         private string GetOwner(string fileName)
@@ -142,7 +142,7 @@ namespace SecureHost
         //[PrincipalPermission(SecurityAction.Demand, Authenticated = true, Role = "Access")]
         public void Modify(string fileName, string data, EModifyType modifyType)
         {
-            AuthAndAutorize("Modify", new string[] { "Access", "Modify" });
+            AuthAndAutorize("Modify", new string[] { "Access", "Write" });
             object lo;
             if (!locks.TryGetValue(fileName, out lo))
             {

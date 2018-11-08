@@ -6,7 +6,7 @@ makecert -sv WCFService.pvk -iv TestCA.pvk -n "CN=wcfservice" -pe -ic TestCA.cer
 
 pvk2pfx.exe /pvk WCFService.pvk /pi 123 /spc WCFService.cer /pfx WCFService.pfx
 
-"C:\Program Files\Windows Resource Kits\Tools\winhttpcertcfg.exe" -g -c LOCAL_MACHINE\My -s wcfservice -a wcfservice
+"C:\Program Files (x86)\Windows Kits\10\bin\10.0.16299.0\x86\winhttpcertcfg.exe" -g -c LOCAL_MACHINE\My -s wcfservice -a wcfservice
 
 
 
@@ -17,3 +17,9 @@ pvk2pfx.exe /pvk WCFClient.pvk /pi 123 /spc WCFClient.cer /pfx WCFClient.pfx
 winhttpcertcfg -g -c LOCAL_MACHINE\My -s wcfclient -a wcfclient
 
 
+
+
+
+makecert -sv WCFAdm.pvk -iv TestCA.pvk -n "CN=wcfAdm,OU=wcfAdmin,O=P04-10" -pe -ic TestCA.cer WCFAdm.cer -sr localmachine -ss My -sky exchange
+
+pvk2pfx.exe /pvk WCFAdm.pvk /pi 123 /spc WCFAdm.cer /pfx WCFAdm.pfx

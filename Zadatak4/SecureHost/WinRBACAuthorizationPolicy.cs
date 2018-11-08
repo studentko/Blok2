@@ -47,15 +47,24 @@ namespace SecureHost
                 return false;
             }
 
-            evaluationContext.Properties["Principal"] = GetPrincipal(identities[0]);
+
+            RBACPrincipalCache principalCache = RBACPrincipalCache.GetInstance();
+            RBACPrincipal principal = principalCache.GetPrincipal(identities[0]);
+            if (principal == null)
+            {
+                principal = GetPrincipal(identities[0]);
+                principalCache.PutPrincipal(identities[0], principal);
+            }
+
+            evaluationContext.Properties["Principal"] = principal;
             return true;
         }
 
-        protected virtual IPrincipal GetPrincipal(IIdentity identity)
+        protected virtual RBACPrincipal GetPrincipal(IIdentity identity)
         {
             lock (locker)
             {
-                IPrincipal principal = null;
+                RBACPrincipal principal = null;
                 WindowsIdentity windowsIdentity = identity as WindowsIdentity;
 
                 if (windowsIdentity != null)
