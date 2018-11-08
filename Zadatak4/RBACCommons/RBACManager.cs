@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -15,6 +16,8 @@ namespace RBACCommons
         List<IRBACObserver> observers;
 
         DateTime lastEdit;
+
+        Timer refresh;
 
         Dictionary<string, List<string>> permissions = null;
         XmlDocument xml = null;
@@ -72,11 +75,16 @@ namespace RBACCommons
 
         private RBACManager()
         {
+            refresh = new Timer(TimerCallback, null, 0, 1000);
             observers = new List<IRBACObserver>();
             ReloadRBAC();
         }
 
-
+        private void TimerCallback(Object o)
+        {
+            ReloadCheck();
+        }
+        
         public static RBACManager GetInstance()
         {
             if(instance == null)
