@@ -16,87 +16,78 @@ namespace SecureProxy
     {
         static void Main(string[] args)
         {
+            string input, data;
+            char inChar;
+            Processor p;
 
-            /*NetTcpBinding binding = new NetTcpBinding();
+            Console.WriteLine("Enter IP address:");
+            input = Console.ReadLine();
 
-            binding.Security.Mode = SecurityMode.Transport;
-            //binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            //binding.Security.Transport.ProtectionLevel = ProtectionLevel.EncryptAndSign
+            Console.WriteLine("Select Security type:\n1) Windows\n2) Certificate");
+            inChar = (char)Console.Read();
 
-            // za cert auth:
-            binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Certificate;
-            X509Certificate2 srvCert = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, "wcfservice");
-
-
-            //string address = "net.tcp://localhost:12354/ICommonService";
-            EndpointAddress address = new EndpointAddress(new Uri("net.tcp://localhost:12354/ICommonService"),
-                                      new X509CertificateEndpointIdentity(srvCert));
-
-
-            ChannelFactory<ICommonService> factory = new ChannelFactory<ICommonService>(binding, address);
-
-            factory.Credentials.ServiceCertificate.Authentication.CertificateValidationMode = System.ServiceModel.Security.X509CertificateValidationMode.ChainTrust;
-            factory.Credentials.ServiceCertificate.Authentication.RevocationMode = X509RevocationMode.NoCheck;
-
-            //factory.Credentials.ClientCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, "wcfclient");
-            factory.Credentials.ClientCertificate.Certificate = CertManager.GetCertificateFromFile(@"C:\Users\Sedmak\Desktop\cert\WCFClient.pfx");
-            
-
-            ICommonService proxy = factory.CreateChannel();
-
-            Console.WriteLine("Trying Create");
-            try
+            if (inChar == '1')
             {
-                proxy.Create("hopala");
-                Console.WriteLine("Sucess!\n");
-            } catch (Exception e)
+                p = new Processor(new WinAuthClient("net.tcp://" + input + ":12354/ICommonService"));
+            }
+            else if (inChar == '2')
             {
-                Console.WriteLine(e.Message);
+                p = new Processor(new CertClient("net.tcp://" + input + ":12355/ICommonService", "B2Z4wcfservice"));
             }
 
-            Console.WriteLine("Trying Delete");
-            try
+            else return;
+
+            while (true)
             {
-                proxy.Delete("hopala");
-                Console.WriteLine("Sucess!\n");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
+                Console.WriteLine("Enter key to use function: ");
+                Console.WriteLine("1) Create file");
+                Console.WriteLine("2) Modify file");
+                Console.WriteLine("3) Read file");
+                Console.WriteLine("4) Delete file");
+                Console.WriteLine("5) Exit");
+                inChar = (char)Console.Read();
+                switch (inChar)
+                {
+                    case '1':
+                        Console.WriteLine("Enter file name:");
+                        input = Console.ReadLine();
+                        p.Create(input);
+                        break;
+                    case '2':
+                        Console.WriteLine("Enter file name:");
+                        input = Console.ReadLine();
+                        Console.WriteLine("Enter data to write");
+                        data = Console.ReadLine();
+                        p.Modify(input, data, EModifyType.Overwrite);
+                        break;
+                    case '3':
+                        Console.WriteLine("Enter file name:");
+                        input = Console.ReadLine();
+                        if (p.Read(input, out data))
+                        {
+                            Console.WriteLine("Data read: " + data);
+                        }
+                        break;
+                    case '4':
+                        Console.WriteLine("Enter file name:");
+                        input = Console.ReadLine();
+                        p.Delete(input);
+                        break;
+                    case '5':
+                        return;
+                    default:
+                        Console.WriteLine("Wrong key");
+                        break;
+                }
             }
 
-            Console.WriteLine("Trying Modify");
-            try
-            {
-                proxy.Modify("hopala", "jojo", EModifyType.Overwrite);
-                Console.WriteLine("Sucess!\n");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            Console.WriteLine("Trying Read");
-            try
-            {
-                proxy.Read("hopala");
-                Console.WriteLine("Sucess!\n");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }*/
-
-            //Processor p = new Processor(new WinAuthClient("net.tcp://10.1.212.156:12354/ICommonService"));
-            Processor p = new Processor(new CertClient("net.tcp://10.1.212.156:12354/ICommonService", "B2Z4wcfservice"));
-
-            p.Create("test.txt");
+            /*p.Create("test.txt");
             p.Modify("test.txt", "data", EModifyType.Append);
             string test;
             p.Read("test.txt", out test);
             Console.WriteLine(test);
             p.Delete("test.txt");
-            Console.Read();
+            Console.Read();*/
         }
     }
 }
