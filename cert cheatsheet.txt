@@ -1,20 +1,20 @@
-makecert -n "CN=TestCA" -r -sv TestCA.pvk TestCA.cer
+makecert -n "CN=B2Z4TestCA" -r -sv B2Z4TestCA.pvk B2Z4TestCA.cer
 
 
 
-makecert -sv WCFService.pvk -iv TestCA.pvk -n "CN=wcfservice" -pe -ic TestCA.cer WCFService.cer -sr localmachine -ss My -sky exchange
+makecert -sv B2Z4WCFService.pvk -iv B2Z4TestCA.pvk -n "CN=B2Z4wcfservice" -pe -ic B2Z4TestCA.cer B2Z4WCFService.cer -sr localmachine -ss My -sky exchange
 
-pvk2pfx.exe /pvk WCFService.pvk /pi 123 /spc WCFService.cer /pfx WCFService.pfx
+pvk2pfx.exe /pvk B2Z4WCFService.pvk /pi 123 /spc B2Z4WCFService.cer /pfx B2Z4WCFService.pfx
 
-"C:\Program Files (x86)\Windows Kits\10\bin\10.0.16299.0\x86\winhttpcertcfg.exe" -g -c LOCAL_MACHINE\My -s wcfservice -a wcfservice
+"C:\Program Files (x86)\Windows Kits\10\bin\10.0.16299.0\x86\winhttpcertcfg.exe" -g -c LOCAL_MACHINE\My -s B2Z4wcfservice -a wcfservice
 
 
 
-makecert -sv WCFClient.pvk -iv TestCA.pvk -n "CN=wcfclient,OU=wcfAdmin,O=SEDMAK-PC" -pe -ic TestCA.cer WCFClient.cer -sr localmachine -ss My -sky exchange
+makecert -sv B2Z4WCFClient.pvk -iv B2Z4TestCA.pvk -n "CN=wcfAdm,OU=wcfAdmin,O=P04-10" -pe -ic B2Z4TestCA.cer B2Z4WCFClient.cer -sr localmachine -ss My -sky exchange
 
-pvk2pfx.exe /pvk WCFClient.pvk /pi 123 /spc WCFClient.cer /pfx WCFClient.pfx
+pvk2pfx.exe /pvk B2Z4WCFClient.pvk /pi 123 /spc B2Z4WCFClient.cer /pfx B2Z4WCFClient.pfx
 
-winhttpcertcfg -g -c LOCAL_MACHINE\My -s wcfclient -a wcfclient
+winhttpcertcfg -g -c LOCAL_MACHINE\My -s B2Z4wcfclient -a wcfclient
 
 
 

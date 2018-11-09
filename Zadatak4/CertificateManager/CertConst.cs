@@ -8,6 +8,6 @@ namespace CertificateManager
 {
     public class CertConst
     {
-        public const string SERVER_CERT_NAME = "wcfservice";
+        public const string SERVER_CERT_NAME = "B2Z4wcfservice";
     }
 }
